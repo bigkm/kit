@@ -72,14 +72,14 @@ module Kit.Repository (
       let source = (localCacheDir kr </> kitPackagePath kit)
       let dest = packagesDirectory kr
       d <- liftIO $ doesDirectoryExist $ dest </> packageFileName kit
-      if not d 
-        then do
-          puts $ " -> Unpacking from cache: " ++ packageFileName kit
-          mkdirP dest 
-          liftIO $ inDirectory dest $ shell ("tar zxf " ++ source)
-          return ()
-        else puts $ " -> Using local package: " ++ packageFileName kit
+      -- if not d 
+      --   then do
+      puts $ " -> Unpacking from cache: " ++ packageFileName kit
+      mkdirP dest 
+      liftIO $ inDirectory dest $ shell ("tar zxf " ++ source)
       return ()
+      --   else puts $ " -> Using local package: " ++ packageFileName kit
+      -- return ()
 
   -- TODO: on publish local, need to flush this particular name/version out
   -- of the packages dir if it exists, so if this is overriding a version, that

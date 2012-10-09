@@ -7,7 +7,7 @@ module Kit.CmdArgs (parseArgs, KitCmdArgs(..)) where
   appVersion :: String
   appVersion = $(packageVariable (pkgVersion . package))
 
-  data KitCmdArgs = Update { repositoryDir :: Maybe String }
+  data KitCmdArgs = Update { repositoryDir :: Maybe String , optdep :: [String] }
                   | Package { repositoryDir :: Maybe String }
                   | PublishLocal { tag :: Maybe String, repositoryDir :: Maybe String }
                   | Verify { sdk :: String, repositoryDir :: Maybe String}
@@ -17,7 +17,8 @@ module Kit.CmdArgs (parseArgs, KitCmdArgs(..)) where
 
   parseMode :: KitCmdArgs
   parseMode = modes [
-        Update def &= help "Create an Xcode project to wrap the dependencies defined in `KitSpec`"
+        Update { repositoryDir = def, optdep = [] } &= explicit &= CA.name "update" &=
+                  help "Create an Xcode project to wrap the dependencies defined in `KitSpec`"
                &= auto -- The default mode to run. This is most common usage.
       , CreateSpec { repositoryDir = def, Kit.CmdArgs.name = (def &= typ "NAME") &= argPos 0, version = (def &= typ "VERSION") &= argPos 1 } &=
                             explicit &=

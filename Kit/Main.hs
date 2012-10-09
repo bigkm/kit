@@ -25,15 +25,15 @@ module Kit.Main where
     runCommand (KA.repositoryDir args) . handleArgs $ args
 
   handleArgs :: KA.KitCmdArgs -> Command ()
-  handleArgs (KA.Update _) = doUpdate
+  handleArgs (KA.Update _ optionalKits) = doUpdate optionalKits
   handleArgs (KA.Package _) = doPackageKit
   handleArgs (KA.PublishLocal _ versionTag) = doPublishLocal versionTag 
   handleArgs (KA.Verify sdkName _) = doVerify sdkName
   handleArgs (KA.CreateSpec name version _) = doCreateSpec name version
   handleArgs (KA.ShowTree _) = doShowTree
 
-  doUpdate :: Command ()
-  doUpdate = do
+  doUpdate :: [String] -> Command ()
+  doUpdate optional_deps = do
               repo <- myRepository
               workingCopy <- myWorkingCopy
               liftKit $ do
@@ -108,7 +108,7 @@ module Kit.Main where
           cleanOrCreate kitVerifyDir
           inDirectory kitVerifyDir $ do
             encodeFile "KitSpec" (defaultSpec "verify-kit" "1.0") { specDependencies = [specKit spec] }
-            runCommand Nothing doUpdate 
+            runCommand Nothing (doUpdate [])
             inDirectory "Kits" $ do
               shell "open ."
               shell $ "xcodebuild -sdk " ++ sdk
